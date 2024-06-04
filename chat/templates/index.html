@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat with AI</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        async function sendMessage() {
+            const message = document.getElementById('message').value;
+            await fetch('/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: message }),
+            });
+            document.getElementById('message').value = '';
+            updateMessages();
+        }
+
+        async function updateMessages() {
+            const response = await fetch('/messages');
+            const data = await response.json();
+            const messageList = document.getElementById('message-list');
+            messageList.innerHTML = '';
+            data.messages.forEach((msg, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerText = `${msg.text} - ${msg.status}`;
+                listItem.onclick = async () => {
+                    if (msg.status === 'success') {
+                        const response = await fetch(`/response/${msg.id}`);
+                        const data = await response.json();
+                        alert(`Answer: ${data.response}`);
+                    }
+                };
+                messageList.appendChild(listItem);
+            });
+        }
+
+        window.onload = updateMessages;
+    </script>
+</head>
+<body>
+    <h1>Chat with AI</h1>
+    <div>
+        <input type="text" id="message" placeholder="Enter your message">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="updateMessages()">Update</button>
+    </div>
+    <ul id="message-list"></ul>
+</body>
+</html>
