@@ -1,6 +1,29 @@
 version: '3.1'
 
 services:
+  postgres:
+    image: postgres:alpine3.20
+    ports:
+        - "5432:5432"
+    volumes:
+        - postgres_db_vol:/var/lib/postgresql/data
+    environment:
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: pass
+        POSTGRES_DB: chat
+
+  chat:
+    build: 
+      context: .
+      dockerfile: Dockerfile.chat
+    ports:
+        - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql+psycopg2://user:pass@postgres:5432/chat
+      KAFKA_INSTANCE: kafka:29092
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -22,3 +45,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    restart: always
+
+volumes:
+  postgres_db_vol:
