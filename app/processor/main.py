@@ -1,5 +1,6 @@
 import json
 import asyncio
+import os
 from aiokafka import AIOKafkaConsumer
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
@@ -7,11 +8,11 @@ from fastapi.concurrency import asynccontextmanager
 from app.db.database import SessionLocal
 import app.db.repository as repository
 
-KAFKA_INSTANCE = "localhost:29092"
+KAFKA_INSTANCE = os.getenv("KAFKA_INSTANCE", "localhost:29092")
 
 loop = asyncio.get_event_loop()
 consumer = AIOKafkaConsumer(
-    "messages", bootstrap_servers=KAFKA_INSTANCE, loop=loop, request_timeout_ms=5000)
+    "messages", bootstrap_servers=KAFKA_INSTANCE, loop=loop)
 
 
 @asynccontextmanager

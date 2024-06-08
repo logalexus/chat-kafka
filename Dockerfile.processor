@@ -11,6 +11,6 @@ RUN pip install --no-cache-dir -r ./requirements.txt
 ENV PYTHONPATH=/app
 
 COPY ./app/db ./app/db
-COPY ./app/chat ./app/chat
+COPY ./app/processor ./app/processor
 
-CMD ["python", "./app/chat/main.py"]
+CMD ["python", "./app/processor/main.py"]
