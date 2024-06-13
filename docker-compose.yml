@@ -11,7 +11,7 @@ services:
     ports:
         - "5432:5432"
     volumes:
-        - postgres_db_vol:/var/lib/postgresql/data
+        - postgres_data:/var/lib/postgresql/data
     environment:
         POSTGRES_USER: user
         POSTGRES_PASSWORD: pass
@@ -78,5 +78,35 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/prometheus_data/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+
 volumes:
-  postgres_db_vol:
+  prometheus_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./monitoring/prometheus_data
+  grafana_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./monitoring/grafana_data
+  postgres_data:

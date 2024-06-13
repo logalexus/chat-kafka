@@ -1,5 +1,7 @@
 import asyncio
 import os
+
+from prometheus_fastapi_instrumentator import Instrumentator
 import app.db.repository as repository
 import app.db.db_init as db_init
 
@@ -29,6 +31,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/chat/static"), name="static")
+
+Instrumentator().instrument(app).expose(app)
 
 templates = Jinja2Templates(directory="app/chat/templates")
 
