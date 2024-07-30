@@ -1,0 +1,18 @@
+services:
+  chat:
+    build: 
+      context: .
+      dockerfile: Dockerfile.chat
+    ports:
+        - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://user:pass@db.devops.com:5432/chat
+      KAFKA_INSTANCE: kafka.devops.com:29092
+
+  processor:
+    build: 
+      context: .
+      dockerfile: Dockerfile.processor
+    environment:
+      DATABASE_URL: postgresql+psycopg2://user:pass@db.devops.com:5432/chat
+      KAFKA_INSTANCE: kafka.devops.com:29092
